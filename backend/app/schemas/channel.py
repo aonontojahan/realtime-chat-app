@@ -13,3 +13,11 @@ class ChannelResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ChannelMemberResponse(BaseModel):
+    user_id: int
+    channel_id: int
+
+    class Config:
+        from_attributes = True

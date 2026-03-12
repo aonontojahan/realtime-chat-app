@@ -4,8 +4,13 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
-from app.schemas.channel import ChannelCreate, ChannelResponse
-from app.services.channel_service import create_channel, get_channels, join_channel
+from app.schemas.channel import ChannelCreate, ChannelResponse, ChannelMemberResponse
+from app.services.channel_service import (
+    create_channel,
+    get_channels,
+    join_channel,
+    get_channel_members
+)
 
 router = APIRouter(prefix="/channels", tags=["Channels"])
 
@@ -25,9 +30,17 @@ def list_channels(db: Session = Depends(get_db),
     return get_channels(db)
 
 
-@router.post("/{channel_id}/join")
+@router.post("/{channel_id}/join", response_model=ChannelMemberResponse)
 def join(channel_id: int,
          db: Session = Depends(get_db),
          current_user: User = Depends(get_current_user)):
 
     return join_channel(db, current_user.id, channel_id)
+
+
+@router.get("/{channel_id}/members", response_model=list[ChannelMemberResponse])
+def members(channel_id: int,
+            db: Session = Depends(get_db),
+            current_user: User = Depends(get_current_user)):
+
+    return get_channel_members(db, channel_id)

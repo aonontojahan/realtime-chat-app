@@ -37,3 +37,9 @@ def join_channel(db: Session, user_id: int, channel_id: int):
     db.refresh(member)
 
     return member
+
+
+def get_channel_members(db: Session, channel_id: int):
+    return db.query(ChannelMember).filter(
+        ChannelMember.channel_id == channel_id
+    ).all()
