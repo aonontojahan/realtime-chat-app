@@ -5,6 +5,16 @@ from app.core.security import hash_password, verify_password
 
 
 def create_user(db: Session, user: UserCreate):
+    # check if email already exists
+    existing_email = db.query(User).filter(User.email == user.email).first()
+    if existing_email:
+        raise ValueError("Email already registered")
+
+    # check if username already exists
+    existing_username = db.query(User).filter(User.username == user.username).first()
+    if existing_username:
+        raise ValueError("Username already taken")
+
     hashed_password = hash_password(user.password)
 
     new_user = User(
