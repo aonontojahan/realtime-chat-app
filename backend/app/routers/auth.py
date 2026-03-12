@@ -11,8 +11,11 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    new_user = create_user(db, user)
-    return new_user
+    try:
+        new_user = create_user(db, user)
+        return new_user
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/login")
