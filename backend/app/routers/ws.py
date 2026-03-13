@@ -26,6 +26,7 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
 
             data = await websocket.receive_json()
 
+            # MESSAGE EVENT
             if data.get("type") == "message":
 
                 content = data.get("message")
@@ -47,6 +48,14 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
                     "content": saved_message.content,
                     "user_id": saved_message.user_id,
                     "channel_id": saved_message.channel_id
+                })
+
+            # TYPING EVENT
+            if data.get("type") == "typing":
+
+                await manager.broadcast(channel_id, {
+                    "type": "typing",
+                    "user_id": user_id
                 })
 
     except WebSocketDisconnect:
