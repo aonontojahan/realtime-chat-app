@@ -12,8 +12,14 @@ export default function ChatWindow() {
   const userId = 1
   const channelId = 1
 
-  const { messages, sendMessage, sendTyping, typingUser } =
-    useSocket(channelId, userId)
+  const {
+    messages,
+    sendMessage,
+    sendTyping,
+    typingUser,
+    reactions,
+    sendReaction
+  } = useSocket(channelId,userId)
 
   const logout = () => {
 
@@ -27,7 +33,6 @@ export default function ChatWindow() {
 
     <div className="flex flex-col flex-1 bg-zinc-900">
 
-      {/* Header */}
       <div className="border-b border-zinc-800 p-4 text-white flex justify-between items-center">
 
         <span className="font-semibold">
@@ -44,11 +49,13 @@ export default function ChatWindow() {
       </div>
 
 
-      {/* Messages */}
-      <MessageList messages={messages} />
+      <MessageList
+        messages={messages}
+        reactions={reactions}
+        sendReaction={sendReaction}
+      />
 
 
-      {/* Typing Indicator */}
       {typingUser && (
         <div className="px-6 py-1 text-sm text-zinc-400">
           User {typingUser} is typing...
@@ -56,7 +63,6 @@ export default function ChatWindow() {
       )}
 
 
-      {/* Input */}
       <MessageInput
         sendMessage={sendMessage}
         sendTyping={sendTyping}

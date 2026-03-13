@@ -1,8 +1,6 @@
 "use client"
 
-export default function MessageList({ messages }: any) {
-
-  const currentUserId = 1
+export default function MessageList({ messages, reactions, sendReaction }: any) {
 
   return (
 
@@ -10,24 +8,34 @@ export default function MessageList({ messages }: any) {
 
       {messages.map((msg:any)=>{
 
-        const isMe = msg.user_id === currentUserId
+        const msgReactions = reactions.filter(
+          (r:any)=> r.message_id === msg.id
+        )
 
         return (
 
-          <div
-            key={msg.id}
-            className={`flex ${isMe ? "justify-end" : "justify-start"}`}
-          >
+          <div key={msg.id} className="space-y-1">
 
-            <div
-              className={`px-4 py-2 rounded-xl max-w-xs ${
-                isMe
-                ? "bg-blue-600 text-white"
-                : "bg-zinc-800 text-white"
-              }`}
-            >
+            <div className="bg-zinc-800 text-white px-4 py-2 rounded-lg max-w-xs">
 
               {msg.content}
+
+            </div>
+
+            <div className="flex gap-2 text-sm">
+
+              {msgReactions.map((r:any,i:number)=>(
+                <span key={i}>
+                  {r.emoji}
+                </span>
+              ))}
+
+              <button
+                onClick={()=>sendReaction(msg.id,"👍")}
+                className="text-zinc-400 hover:text-white"
+              >
+                +
+              </button>
 
             </div>
 

@@ -6,16 +6,24 @@ import { getChannelMessages } from "@/services/channel"
 export default function useSocket(channelId:number,userId:number){
 
   const socketRef = useRef<WebSocket | null>(null)
+
   const [messages,setMessages] = useState<any[]>([])
   const [typingUser,setTypingUser] = useState<number | null>(null)
+  const [reactions,setReactions] = useState<any[]>([])
 
   useEffect(()=>{
 
     async function loadHistory(){
 
-      const history = await getChannelMessages(channelId)
+      try{
 
-      setMessages(history)
+        const history = await getChannelMessages(channelId)
+
+        setMessages(history)
+
+      }catch(err){
+        console.log("History load error",err)
+      }
 
     }
 
@@ -26,6 +34,10 @@ export default function useSocket(channelId:number,userId:number){
     )
 
     socketRef.current = ws
+
+    ws.onopen = ()=>{
+      console.log("WebSocket connected")
+    }
 
     ws.onmessage = (event)=>{
 
@@ -44,6 +56,12 @@ export default function useSocket(channelId:number,userId:number){
         setTimeout(()=>{
           setTypingUser(null)
         },2000)
+
+      }
+
+      if(data.type === "reaction"){
+
+        setReactions(prev => [...prev,data])
 
       }
 
@@ -66,6 +84,7 @@ export default function useSocket(channelId:number,userId:number){
 
   }
 
+
   const sendTyping = ()=>{
 
     socketRef.current?.send(JSON.stringify({
@@ -74,6 +93,24 @@ export default function useSocket(channelId:number,userId:number){
 
   }
 
-  return {messages,sendMessage,sendTyping,typingUser}
+
+  const sendReaction = (messageId:number,emoji:string)=>{
+
+    socketRef.current?.send(JSON.stringify({
+      type:"reaction",
+      message_id:messageId,
+      emoji:emoji
+    }))
+
+  }
+
+  return {
+    messages,
+    sendMessage,
+    sendTyping,
+    typingUser,
+    reactions,
+    sendReaction
+  }
 
 }
