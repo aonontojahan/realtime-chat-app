@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { getChannelMessages } from "@/services/channel"
 
 export default function useSocket(channelId:number,userId:number){
 
@@ -9,13 +10,29 @@ export default function useSocket(channelId:number,userId:number){
 
   useEffect(()=>{
 
+    async function loadHistory(){
+
+      try{
+
+        const history = await getChannelMessages(channelId)
+
+        setMessages(history)
+
+      }catch(err){
+        console.log("History load error",err)
+      }
+
+    }
+
+    loadHistory()
+
     const ws = new WebSocket(
       `ws://127.0.0.1:8000/ws/channels/${channelId}?user_id=${userId}`
     )
 
     socketRef.current = ws
 
-    ws.onopen = () => {
+    ws.onopen = ()=>{
       console.log("WebSocket connected")
     }
 
@@ -23,16 +40,12 @@ export default function useSocket(channelId:number,userId:number){
 
       const data = JSON.parse(event.data)
 
-      console.log("Incoming:",data)
-
       if(data.type === "message"){
+
         setMessages(prev => [...prev,data])
+
       }
 
-    }
-
-    ws.onclose = () => {
-      console.log("WebSocket closed")
     }
 
     ws.onerror = (err)=>{
@@ -49,11 +62,6 @@ export default function useSocket(channelId:number,userId:number){
   const sendMessage = (message:string)=>{
 
     if(!socketRef.current) return
-
-    if(socketRef.current.readyState !== WebSocket.OPEN){
-      console.log("Socket not ready")
-      return
-    }
 
     socketRef.current.send(JSON.stringify({
       type:"message",

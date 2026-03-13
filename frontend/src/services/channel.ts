@@ -24,7 +24,6 @@ export async function getChannels() {
   return res.data
 }
 
-
 export async function getChannelMessages(channelId:number){
 
   const res = await axios.get(
@@ -33,5 +32,4 @@ export async function getChannelMessages(channelId:number){
   )
 
   return res.data
-
 }
