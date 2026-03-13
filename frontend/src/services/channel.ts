@@ -24,7 +24,7 @@ export async function getChannels() {
   return res.data
 }
 
-export async function getChannelMessages(channelId:number){
+export async function getChannelMessages(channelId: number) {
 
   const res = await axios.get(
     `${API}/messages/channels/${channelId}`,

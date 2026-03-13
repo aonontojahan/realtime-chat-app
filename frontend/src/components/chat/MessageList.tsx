@@ -16,12 +16,19 @@ export default function MessageList({ messages, reactions, sendReaction }: any) 
 
           <div key={msg.id} className="space-y-1">
 
+            {/* Sender Email */}
+            <div className="text-xs text-zinc-400">
+              {msg.email}
+            </div>
+
+            {/* Message Bubble */}
             <div className="bg-zinc-800 text-white px-4 py-2 rounded-lg max-w-xs">
 
               {msg.content}
 
             </div>
 
+            {/* Reactions */}
             <div className="flex gap-2 text-sm">
 
               {msgReactions.map((r:any,i:number)=>(
