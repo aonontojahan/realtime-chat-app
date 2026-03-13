@@ -10,3 +10,6 @@ backend/venv
 
 # OS files
 .DS_Store
+
+# frontend
+frontend/node_modules
