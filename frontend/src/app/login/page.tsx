@@ -10,18 +10,23 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
 
   const handleLogin = async () => {
 
     try {
 
-      await login(email, password)
+      const token = await login(email, password)
+
+      console.log("TOKEN:", token)
 
       router.push("/")
 
-    } catch (error) {
+    } catch (err: any) {
 
-      alert("Login failed")
+      console.error("LOGIN ERROR:", err.response?.data)
+
+      setError(JSON.stringify(err.response?.data))
 
     }
 
@@ -58,6 +63,12 @@ export default function LoginPage() {
         >
           Login
         </button>
+
+        {error && (
+          <div className="text-red-400 text-sm">
+            {error}
+          </div>
+        )}
 
       </div>
 

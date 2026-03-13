@@ -1,18 +1,21 @@
-import api from "./api"
+import axios from "axios"
+
+const API = "http://127.0.0.1:8000"
 
 export async function login(email: string, password: string) {
 
-  const res = await api.post("/auth/login", {
-    email,
-    password
+  const response = await axios.post(`${API}/auth/login`, {
+    email: email,
+    password: password
   })
 
-  const token = res.data.access_token
+  const token = response.data.access_token
 
   localStorage.setItem("token", token)
 
   return token
 }
+
 
 export async function register(
   username: string,
@@ -20,10 +23,12 @@ export async function register(
   password: string
 ) {
 
-  return api.post("/auth/register", {
+  const response = await axios.post(`${API}/auth/register`, {
     username,
     email,
     password
   })
+
+  return response.data
 
 }
