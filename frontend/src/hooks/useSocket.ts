@@ -2,44 +2,67 @@
 
 import { useEffect, useRef, useState } from "react"
 
-export default function useSocket(channelId: number, userId: number) {
+export default function useSocket(channelId:number,userId:number){
 
-  const socket = useRef<WebSocket | null>(null)
-  const [messages, setMessages] = useState<any[]>([])
+  const socketRef = useRef<WebSocket | null>(null)
+  const [messages,setMessages] = useState<any[]>([])
 
-  useEffect(() => {
+  useEffect(()=>{
 
-    socket.current = new WebSocket(
+    const ws = new WebSocket(
       `ws://127.0.0.1:8000/ws/channels/${channelId}?user_id=${userId}`
     )
 
-    socket.current.onmessage = (event) => {
+    socketRef.current = ws
+
+    ws.onopen = () => {
+      console.log("WebSocket connected")
+    }
+
+    ws.onmessage = (event)=>{
 
       const data = JSON.parse(event.data)
 
-      if (data.type === "message") {
-        setMessages((prev) => [...prev, data])
+      console.log("Incoming:",data)
+
+      if(data.type === "message"){
+        setMessages(prev => [...prev,data])
       }
 
     }
 
-    return () => {
-      socket.current?.close()
+    ws.onclose = () => {
+      console.log("WebSocket closed")
     }
 
-  }, [channelId, userId])
+    ws.onerror = (err)=>{
+      console.log("WebSocket error",err)
+    }
 
-  const sendMessage = (message: string) => {
+    return ()=>{
+      ws.close()
+    }
 
-    socket.current?.send(
-      JSON.stringify({
-        type: "message",
-        message
-      })
-    )
+  },[channelId,userId])
+
+
+  const sendMessage = (message:string)=>{
+
+    if(!socketRef.current) return
+
+    if(socketRef.current.readyState !== WebSocket.OPEN){
+      console.log("Socket not ready")
+      return
+    }
+
+    socketRef.current.send(JSON.stringify({
+      type:"message",
+      message:message,
+      user_id:userId
+    }))
 
   }
 
-  return { messages, sendMessage }
+  return {messages,sendMessage}
 
 }
