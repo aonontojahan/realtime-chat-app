@@ -1,7 +1,16 @@
+"use client"
+
+import useSocket from "@/hooks/useSocket"
 import MessageList from "./MessageList"
 import MessageInput from "./MessageInput"
 
 export default function ChatWindow() {
+
+  const userId = 1
+  const channelId = 1
+
+  const { messages, sendMessage } = useSocket(channelId, userId)
+
   return (
     <div className="flex flex-col flex-1 bg-zinc-900">
 
@@ -9,10 +18,11 @@ export default function ChatWindow() {
         # general
       </div>
 
-      <MessageList />
+      <MessageList messages={messages} />
 
-      <MessageInput />
+      <MessageInput sendMessage={sendMessage} />
 
     </div>
   )
+
 }
