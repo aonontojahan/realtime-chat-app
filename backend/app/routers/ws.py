@@ -6,6 +6,7 @@ from app.core.database import SessionLocal
 from app.schemas.message import MessageCreate
 from app.services.message_service import create_message
 from app.services.presence_service import set_user_online, set_user_offline
+from app.models.user import User
 
 router = APIRouter()
 
@@ -20,6 +21,8 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
     await manager.connect(channel_id, websocket)
 
     set_user_online(db, user_id)
+
+    user = db.query(User).filter(User.id == user_id).first()
 
     try:
         while True:
@@ -47,6 +50,7 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
                     "id": saved_message.id,
                     "content": saved_message.content,
                     "user_id": saved_message.user_id,
+                    "email": user.email,
                     "channel_id": saved_message.channel_id
                 })
 
