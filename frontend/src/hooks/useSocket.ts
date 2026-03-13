@@ -7,20 +7,15 @@ export default function useSocket(channelId:number,userId:number){
 
   const socketRef = useRef<WebSocket | null>(null)
   const [messages,setMessages] = useState<any[]>([])
+  const [typingUser,setTypingUser] = useState<number | null>(null)
 
   useEffect(()=>{
 
     async function loadHistory(){
 
-      try{
+      const history = await getChannelMessages(channelId)
 
-        const history = await getChannelMessages(channelId)
-
-        setMessages(history)
-
-      }catch(err){
-        console.log("History load error",err)
-      }
+      setMessages(history)
 
     }
 
@@ -32,10 +27,6 @@ export default function useSocket(channelId:number,userId:number){
 
     socketRef.current = ws
 
-    ws.onopen = ()=>{
-      console.log("WebSocket connected")
-    }
-
     ws.onmessage = (event)=>{
 
       const data = JSON.parse(event.data)
@@ -46,10 +37,16 @@ export default function useSocket(channelId:number,userId:number){
 
       }
 
-    }
+      if(data.type === "typing"){
 
-    ws.onerror = (err)=>{
-      console.log("WebSocket error",err)
+        setTypingUser(data.user_id)
+
+        setTimeout(()=>{
+          setTypingUser(null)
+        },2000)
+
+      }
+
     }
 
     return ()=>{
@@ -61,9 +58,7 @@ export default function useSocket(channelId:number,userId:number){
 
   const sendMessage = (message:string)=>{
 
-    if(!socketRef.current) return
-
-    socketRef.current.send(JSON.stringify({
+    socketRef.current?.send(JSON.stringify({
       type:"message",
       message:message,
       user_id:userId
@@ -71,6 +66,14 @@ export default function useSocket(channelId:number,userId:number){
 
   }
 
-  return {messages,sendMessage}
+  const sendTyping = ()=>{
+
+    socketRef.current?.send(JSON.stringify({
+      type:"typing"
+    }))
+
+  }
+
+  return {messages,sendMessage,sendTyping,typingUser}
 
 }

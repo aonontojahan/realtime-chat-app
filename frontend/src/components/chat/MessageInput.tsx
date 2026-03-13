@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-export default function MessageInput({ sendMessage }: any) {
+export default function MessageInput({ sendMessage, sendTyping }: any) {
 
   const [message,setMessage] = useState("")
 
@@ -17,9 +17,14 @@ export default function MessageInput({ sendMessage }: any) {
 
   const handleKeyDown = (e:any) => {
 
-    if(e.key === "Enter" && !e.shiftKey) {
+    sendTyping()
+
+    if(e.key === "Enter" && !e.shiftKey){
+
       e.preventDefault()
+
       handleSend()
+
     }
 
   }
@@ -38,7 +43,7 @@ export default function MessageInput({ sendMessage }: any) {
 
       <button
         onClick={handleSend}
-        className="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-white"
+        className="bg-blue-600 px-5 py-2 rounded-lg text-white"
       >
         Send
       </button>
