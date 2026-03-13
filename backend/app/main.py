@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth, users, channels, ws
+from app.routers import auth, users, channels, messages, ws
 
 app = FastAPI(
     title="Real-Time Chat API",
@@ -10,6 +10,7 @@ app = FastAPI(
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(channels.router)
+app.include_router(messages.router)
 app.include_router(ws.router)
 
 
