@@ -58,6 +58,16 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
                     "user_id": user_id
                 })
 
+            # REACTION EVENT
+            if data.get("type") == "reaction":
+
+                await manager.broadcast(channel_id, {
+                    "type": "reaction",
+                    "message_id": data.get("message_id"),
+                    "emoji": data.get("emoji"),
+                    "user_id": user_id
+                })
+
     except WebSocketDisconnect:
 
         manager.disconnect(channel_id, websocket)
