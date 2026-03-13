@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from app.routers import auth, users, channels, messages, reactions, ws
+from fastapi.staticfiles import StaticFiles
+
+from app.routers import auth, users, channels, messages, reactions, uploads, ws
 
 app = FastAPI(
     title="Real-Time Chat API",
@@ -12,7 +14,10 @@ app.include_router(users.router)
 app.include_router(channels.router)
 app.include_router(messages.router)
 app.include_router(reactions.router)
+app.include_router(uploads.router)
 app.include_router(ws.router)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 @app.get("/")
