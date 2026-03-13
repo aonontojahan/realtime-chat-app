@@ -20,28 +20,40 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
         while True:
             data = await websocket.receive_json()
 
-            message_data = MessageCreate(
-                content=data.get("message"),
-                channel_id=channel_id
-            )
+            event_type = data.get("type")
 
-            # Save message to database
-            saved_message = create_message(
-                db=db,
-                user_id=data.get("user_id"),
-                message=message_data
-            )
+            # Typing indicator
+            if event_type == "typing":
 
-            broadcast_data = {
-                "id": saved_message.id,
-                "content": saved_message.content,
-                "user_id": saved_message.user_id,
-                "channel_id": saved_message.channel_id,
-                "created_at": str(saved_message.created_at)
-            }
+                await manager.broadcast(channel_id, {
+                    "type": "typing",
+                    "user_id": data.get("user_id")
+                })
 
-            # Broadcast message
-            await manager.broadcast(channel_id, broadcast_data)
+            # Chat message
+            if event_type == "message":
+
+                message_data = MessageCreate(
+                    content=data.get("message"),
+                    channel_id=channel_id
+                )
+
+                saved_message = create_message(
+                    db=db,
+                    user_id=data.get("user_id"),
+                    message=message_data
+                )
+
+                broadcast_data = {
+                    "type": "message",
+                    "id": saved_message.id,
+                    "content": saved_message.content,
+                    "user_id": saved_message.user_id,
+                    "channel_id": saved_message.channel_id,
+                    "created_at": str(saved_message.created_at)
+                }
+
+                await manager.broadcast(channel_id, broadcast_data)
 
     except WebSocketDisconnect:
         manager.disconnect(channel_id, websocket)
