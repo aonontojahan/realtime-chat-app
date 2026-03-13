@@ -13,34 +13,25 @@ router = APIRouter()
 @router.websocket("/ws/channels/{channel_id}")
 async def websocket_endpoint(websocket: WebSocket, channel_id: int):
 
-    await websocket.accept()
-
     db: Session = SessionLocal()
 
     user_id = int(websocket.query_params.get("user_id"))
 
     await manager.connect(channel_id, websocket)
 
-    # Mark user online
     set_user_online(db, user_id)
 
     try:
         while True:
+
             data = await websocket.receive_json()
 
-            event_type = data.get("type")
+            if data.get("type") == "message":
 
-            if event_type == "typing":
-
-                await manager.broadcast(channel_id, {
-                    "type": "typing",
-                    "user_id": user_id
-                })
-
-            if event_type == "message":
+                content = data.get("message")
 
                 message_data = MessageCreate(
-                    content=data.get("message"),
+                    content=content,
                     channel_id=channel_id
                 )
 
@@ -55,13 +46,11 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
                     "id": saved_message.id,
                     "content": saved_message.content,
                     "user_id": saved_message.user_id,
-                    "channel_id": saved_message.channel_id,
-                    "created_at": str(saved_message.created_at)
+                    "channel_id": saved_message.channel_id
                 })
 
     except WebSocketDisconnect:
 
         manager.disconnect(channel_id, websocket)
 
-        # Mark user offline
         set_user_offline(db, user_id)
