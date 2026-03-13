@@ -26,13 +26,16 @@ export default function ChatWindow() {
 
     <div className="flex flex-col flex-1 bg-zinc-900">
 
-      <div className="border-b border-zinc-800 p-4 text-white flex justify-between">
+      {/* Header */}
+      <div className="border-b border-zinc-800 p-4 text-white flex justify-between items-center">
 
-        <span># general</span>
+        <span className="font-semibold">
+          # general
+        </span>
 
         <button
           onClick={logout}
-          className="bg-red-500 px-3 py-1 rounded text-sm"
+          className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
         >
           Logout
         </button>
