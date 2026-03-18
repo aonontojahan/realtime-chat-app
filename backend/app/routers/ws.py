@@ -7,6 +7,7 @@ from app.schemas.message import MessageCreate
 from app.services.message_service import create_message
 from app.services.presence_service import set_user_online, set_user_offline
 from app.models.user import User
+from app.models.channel_member import ChannelMember
 
 router = APIRouter()
 
@@ -33,10 +34,12 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
             if data.get("type") == "message":
 
                 content = data.get("message")
+                reply_to_id = data.get("reply_to_id")
 
                 message_data = MessageCreate(
                     content=content,
-                    channel_id=channel_id
+                    channel_id=channel_id,
+                    reply_to_id=reply_to_id
                 )
 
                 saved_message = create_message(
@@ -44,6 +47,14 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
                     user_id=user_id,
                     message=message_data
                 )
+                
+                reply_preview = None
+                if saved_message.reply_to_message:
+                    reply_preview = {
+                        "id": saved_message.reply_to_message.id,
+                        "content": saved_message.reply_to_message.content,
+                        "email": saved_message.reply_to_message.user.email
+                    }
 
                 await manager.broadcast(channel_id, {
                     "type": "message",
@@ -51,8 +62,30 @@ async def websocket_endpoint(websocket: WebSocket, channel_id: int):
                     "content": saved_message.content,
                     "user_id": saved_message.user_id,
                     "email": user.email,
+                    "reply_to_id": saved_message.reply_to_id,
+                    "reply_to_message": reply_preview,
                     "channel_id": saved_message.channel_id
                 })
+
+            # MARK READ EVENT
+            if data.get("type") == "mark_read":
+                message_id = data.get("message_id")
+                
+                member = db.query(ChannelMember).filter(
+                    ChannelMember.user_id == user_id, 
+                    ChannelMember.channel_id == channel_id
+                ).first()
+                if member:
+                    if not member.last_read_message_id or message_id > member.last_read_message_id:
+                        member.last_read_message_id = message_id
+                        db.commit()
+                        
+                        await manager.broadcast(channel_id, {
+                            "type": "read_receipt",
+                            "user_id": user_id,
+                            "email": user.email,
+                            "message_id": message_id
+                        })
 
             # TYPING EVENT
             if data.get("type") == "typing":

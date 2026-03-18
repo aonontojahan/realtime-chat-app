@@ -13,14 +13,17 @@ export async function login(email: string, password: string) {
 
   localStorage.setItem("token", token)
   localStorage.setItem("email", email)
+  localStorage.setItem("userId", res.data.user.id.toString())
+  localStorage.setItem("username", res.data.user.username)
 
   return res.data
 }
 
 
-export async function register(email: string, password: string) {
+export async function register(username: string, email: string, password: string) {
 
   const res = await axios.post(`${API}/auth/register`, {
+    username,
     email,
     password
   })

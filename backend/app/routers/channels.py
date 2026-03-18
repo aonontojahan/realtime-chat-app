@@ -44,3 +44,12 @@ def members(channel_id: int,
             current_user: User = Depends(get_current_user)):
 
     return get_channel_members(db, channel_id)
+
+
+@router.post("/dm/{other_user_id}", response_model=ChannelResponse)
+def get_or_create_dm(other_user_id: int,
+                     db: Session = Depends(get_db),
+                     current_user: User = Depends(get_current_user)):
+
+    from app.services.channel_service import get_or_create_dm_channel
+    return get_or_create_dm_channel(db, current_user.id, other_user_id)

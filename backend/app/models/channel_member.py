@@ -9,3 +9,4 @@ class ChannelMember(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
     channel_id = Column(Integer, ForeignKey("channels.id"))
+    last_read_message_id = Column(Integer, ForeignKey("messages.id"), nullable=True)

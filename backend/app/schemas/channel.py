@@ -4,11 +4,13 @@ from datetime import datetime
 
 class ChannelCreate(BaseModel):
     name: str
+    is_direct: bool = False
 
 
 class ChannelResponse(BaseModel):
     id: int
     name: str
+    is_direct: bool
     created_at: datetime
 
     class Config:
