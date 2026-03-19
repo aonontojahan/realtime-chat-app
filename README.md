@@ -45,7 +45,7 @@ Open a new terminal and run:
 cd backend
 # Create and activate virtual environment (Windows)
 python -m venv venv
-venv\Scripts\activate
+source venv/Scripts/activate
 # For Mac/Linux use: source venv/bin/activate
 
 # Install dependencies
