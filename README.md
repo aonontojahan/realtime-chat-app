@@ -7,7 +7,7 @@ A professional Slack-like real-time chat application built with modern full-stac
 - PostgreSQL
 - SQLAlchemy
 - WebSockets
-- JWT Authentication
+- JWT Authentication.
 
 ## Frontend
 - Next.js
