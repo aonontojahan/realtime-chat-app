@@ -1,52 +1,49 @@
-# Real-Time Chat Application
+# Realtime Chat App
 
-A professional Slack-like real-time chat application built with modern full-stack technologies.
+A Slack-like, real-time chat application with user authentication, WebSocket messaging, channels, private messages, reactions, typing indicators, and file uploads.
 
-## Backend
+## Tech Stack
+
+### Backend
 - FastAPI
 - PostgreSQL
 - SQLAlchemy
 - WebSockets
-- JWT Authentication
+- JWT authentication
 
-## Frontend
-- Next.js
+### Frontend
+- Next.js (App Router)
 - TailwindCSS
-- Shadcn UI
+- shadcn/ui
 
 ## Features
-- User authentication
-- Channel creation
-- Real-time messaging
-- Private messaging
+- Sign up / sign in with JWT
+- Public channels + private messaging
+- Real-time message delivery over WebSockets
 - Message history
 - Typing indicators
 - Online/offline status
 - File uploads
 - Emoji reactions
 
-## Architecture
-- Scalable backend structure
-- WebSocket manager
-- Clean service architecture
-- Reusable frontend components
-
-## Deployment
-- Docker
-- VPS deployment
+## Prerequisites
+- Python 3.10+ (recommended)
+- Node.js 18+ 
+- PostgreSQL running (or provide your own DB connection details via environment variables)
 
 ## How to Run Locally
 
-You will need two separate terminal windows in VS Code to run both the frontend and backend.
+This project uses **two terminals**: one for the backend and one for the frontend.
 
-### 1. Backend (FastAPI)
-Open a new terminal and run:
+### 1) Backend (FastAPI)
+
+From the project root:
 ```bash
 cd backend
+
 # Create and activate virtual environment (Windows)
 python -m venv venv
-source venv/Scripts/activate
-# For Mac/Linux use: source venv/bin/activate
+venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -54,16 +51,22 @@ pip install -r requirements.txt
 # Run the backend server
 uvicorn app.main:app --reload
 ```
-The backend API will be running at `http://localhost:8000`.
 
-### 2. Frontend (Next.js)
-Open another terminal and run:
+Backend will be available at: `http://localhost:8000`.
+
+### 2) Frontend (Next.js)
+
+In a second terminal:
 ```bash
 cd frontend
-# Install dependencies
-npm install
 
-# Run the frontend development server
+npm install
 npm run dev
 ```
-The frontend application will be accessible at `http://localhost:3000`.
+
+Frontend will be available at: `http://localhost:3000`.
+
+## Docker
+
+A `docker/` directory exists, but it currently only contains a placeholder file (`.gitkeep`). If you add Dockerfiles / compose configuration, document the available commands here.
+
