@@ -9,7 +9,7 @@ A Slack-like, real-time chat application with user authentication, WebSocket mes
 - PostgreSQL
 - SQLAlchemy
 - WebSockets
-- JWT authentication
+- JWT Authentication
 
 ### Frontend
 - Next.js (App Router)
@@ -63,10 +63,4 @@ cd frontend
 npm install
 npm run dev
 ```
-
-Frontend will be available at: `http://localhost:3000`.
-
-## Docker
-
-A `docker/` directory exists, but it currently only contains a placeholder file (`.gitkeep`). If you add Dockerfiles / compose configuration, document the available commands here.
-
+The frontend application will be accessible at `http://localhost:3000`.
