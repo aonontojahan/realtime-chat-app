@@ -45,7 +45,7 @@ cd backend
 python -m venv venv
 venv\Scripts\activate
 
-# Install dependencies
+# Install dependencies for run this project
 pip install -r requirements.txt
 
 # Run the backend server
